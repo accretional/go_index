@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package goindex;
+
+option go_package = "github.com/fred/go_index/proto/goindex";
+
+import "google/protobuf/timestamp.proto";
+
+// A Go module entry from the Go module index.
+message Module {
+  string path = 1;
+  string version = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+// A collection of modules.
+message ModuleList {
+  repeated Module modules = 1;
+}
+
+// Request to list indexed modules.
+message ListModulesRequest {
+  // Maximum number of modules to return. 0 means no limit.
+  int32 limit = 1;
+  // Filter by module path prefix.
+  string path_prefix = 2;
+}
+
+// Response containing indexed modules.
+message ListModulesResponse {
+  repeated Module modules = 1;
+}
+
+// Request to get a specific module.
+message GetModuleRequest {
+  string path = 1;
+  string version = 2;
+}
+
+// Request to add a module to the index.
+message AddModuleRequest {
+  Module module = 1;
+}
+
+// Response after adding a module.
+message AddModuleResponse {
+  Module module = 1;
+}
+
+// The Go package index service.
+service GoIndexService {
+  // List all indexed modules.
+  rpc ListModules(ListModulesRequest) returns (ListModulesResponse);
+  // Get a specific module by path and version.
+  rpc GetModule(GetModuleRequest) returns (Module);
+  // Add a module to the index.
+  rpc AddModule(AddModuleRequest) returns (AddModuleResponse);
+}
